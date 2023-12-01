@@ -21,6 +21,15 @@ public class ToioFace : MonoBehaviour, ICBCentralManagerDelegate, ICBPeripheralD
     CBPeripheral _peripheral;
     CBCharacteristic _expressionCharacteristic;
 
+    bool _connectedToPeripheral = false;
+
+    public bool Connected {
+        get {
+            if (!_connectedToPeripheral) return false;
+            return _expressionCharacteristic != null;
+        }
+    }
+
     void Start()
     {
         var initOptions = new CBCentralManagerInitOptions() { ShowPowerAlert = true };
@@ -46,7 +55,13 @@ public class ToioFace : MonoBehaviour, ICBCentralManagerDelegate, ICBPeripheralD
 
     void ICBCentralManagerDelegate.DidConnectPeripheral(CBCentralManager central, CBPeripheral peripheral)
     {
+        _connectedToPeripheral = true;
         peripheral.DiscoverServices(new string[] { _serviceUUID });
+    }
+
+    void ICBCentralManagerDelegate.DidDisconnectPeripheral(CBCentralManager central, CBPeripheral peripheral, CBError error)
+    {
+        _connectedToPeripheral = false;
     }
 
     void ICBPeripheralDelegate.DidDiscoverServices(CBPeripheral peripheral, CBError error)
