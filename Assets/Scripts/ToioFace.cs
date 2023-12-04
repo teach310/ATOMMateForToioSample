@@ -16,10 +16,12 @@ public class ToioFace : MonoBehaviour, ICBCentralManagerDelegate, ICBPeripheralD
 
     string _serviceUUID = "0B21C05A-44C2-47CC-BFEF-4F7165C33908";
     string _expressionCharacteristicUUID = "B3C450C9-5FC5-48F6-9EFD-D588E494F462";
+    string _distanceCharacteristicUUID = "29C2D1B2-944A-4FBA-AFCD-133E09532556";
 
     CBCentralManager _centralManager;
     CBPeripheral _peripheral;
     CBCharacteristic _expressionCharacteristic;
+    CBCharacteristic _distanceCharacteristic;
 
     bool _connectedToPeripheral = false;
 
@@ -74,7 +76,7 @@ public class ToioFace : MonoBehaviour, ICBCentralManagerDelegate, ICBPeripheralD
 
         foreach (var service in peripheral.Services)
         {
-            peripheral.DiscoverCharacteristics(new string[] { _expressionCharacteristicUUID }, service);
+            peripheral.DiscoverCharacteristics(new string[] { _expressionCharacteristicUUID, _distanceCharacteristicUUID }, service);
         }
     }
 
@@ -92,8 +94,29 @@ public class ToioFace : MonoBehaviour, ICBCentralManagerDelegate, ICBPeripheralD
             {
                 _expressionCharacteristic = characteristic;
                 Debug.Log("Connected");
-                return;
             }
+
+            if (characteristic.UUID == _distanceCharacteristicUUID)
+            {
+                _distanceCharacteristic = characteristic;
+                peripheral.SetNotifyValue(true, characteristic);
+            }
+        }
+    }
+
+    void ICBPeripheralDelegate.DidUpdateValueForCharacteristic(CBPeripheral peripheral, CBCharacteristic characteristic, CBError error)
+    {
+        if (error != null)
+        {
+            Debug.LogError($"[DidUpdateValueForCharacteristic] error: {error}");
+            return;
+        }
+
+        if (characteristic.UUID == _distanceCharacteristicUUID)
+        {
+            var data = characteristic.Value;
+            int distance = BitConverter.ToInt16(data, 0);
+            Debug.Log($"Distance: {distance}");
         }
     }
 
