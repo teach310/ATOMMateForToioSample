@@ -6,15 +6,26 @@ public class ATOMMateForToioScene : MonoBehaviour
     [SerializeField] ToioFace _toioFace;
     CubeManager _cubeManager;
     Cube _cube;
+    ToioBehaviourController _controller;
 
     async void Start()
     {
         _cubeManager = new CubeManager(ConnectType.Real);
         _cube = await _cubeManager.SingleConnect();
+        SetupHandle(_cubeManager.handles[0]);
+        _controller = new ToioBehaviourController(_cubeManager, _cubeManager.handles[0]);
+        _controller.OnEnter();
+    }
+
+    void SetupHandle(CubeHandle handle)
+    {
+        // defaultだとマットからはみ出しがちのため、少し狭める
+        handle.borderRect = new RectInt(75, 75, 360, 360);
     }
 
     void Update()
     {
+        _controller?.OnUpdate();
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (_cube == null) return;
