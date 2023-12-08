@@ -12,6 +12,7 @@ public class ATOMMateForToioScene : MonoBehaviour
     {
         _cubeManager = new CubeManager(ConnectType.Real);
         _cube = await _cubeManager.SingleConnect();
+        _cube.buttonCallback.AddListener("ATOMMateForToioScene", OnPressCubeButton);
         SetupHandle(_cubeManager.handles[0]);
         _controller = new ToioBehaviourController(_cubeManager, _cubeManager.handles[0]);
         _controller.Face = _toioFace;
@@ -30,13 +31,25 @@ public class ATOMMateForToioScene : MonoBehaviour
         _controller?.OnUpdate();
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (_cube == null) return;
-            if (!_toioFace.Connected) return;
-
-            var expression = (ToioFace.Expression)Random.Range(0, 6);
-            _toioFace.SetExpression(expression);
-            PlaySound(expression);
+            RandomExpression();
         }
+    }
+
+    void OnPressCubeButton(Cube c)
+    {
+        if (c.isPressed)
+        {
+            RandomExpression();
+        }
+    }
+
+    void RandomExpression()
+    {
+        if (_cube == null) return;
+        if (!_toioFace.Connected) return;
+        var expression = (ToioFace.Expression)Random.Range(0, 6);
+        _toioFace.SetExpression(expression);
+        PlaySound(expression);
     }
 
     void PlaySound(ToioFace.Expression expression)
