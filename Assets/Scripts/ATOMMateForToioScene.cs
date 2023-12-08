@@ -21,7 +21,8 @@ public class ATOMMateForToioScene : MonoBehaviour
     void SetupHandle(CubeHandle handle)
     {
         // defaultだとマットからはみ出しがちのため、少し狭める
-        handle.borderRect = new RectInt(75, 75, 360, 360);
+        var matRect = new RectInt(45, 45, 410, 410);
+        handle.SetBorderRect(matRect, margin: 30);
     }
 
     void Update()
