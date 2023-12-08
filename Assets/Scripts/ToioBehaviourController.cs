@@ -10,6 +10,7 @@ public class ToioBehaviourController
     public Cube Cube => CubeHandle.cube;
 
     public ToioBehaviour CurrentBehaviour { get; private set; }
+    public ToioFace Face { get; set; }
 
     public ToioBehaviourController(CubeManager cm, CubeHandle cubeHandle)
     {
@@ -17,6 +18,7 @@ public class ToioBehaviourController
         CubeHandle = cubeHandle;
         _behaviours.Add(typeof(ToioStay).Name, new ToioStay());
         _behaviours.Add(typeof(ToioMoveRandomPoints).Name, new ToioMoveRandomPoints());
+        _behaviours.Add(typeof(ToioMoveAway).Name, new ToioMoveAway());
 
         foreach (var behaviour in _behaviours.Values)
         {

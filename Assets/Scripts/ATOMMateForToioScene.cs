@@ -14,6 +14,7 @@ public class ATOMMateForToioScene : MonoBehaviour
         _cube = await _cubeManager.SingleConnect();
         SetupHandle(_cubeManager.handles[0]);
         _controller = new ToioBehaviourController(_cubeManager, _cubeManager.handles[0]);
+        _controller.Face = _toioFace;
         _controller.OnEnter();
     }
 

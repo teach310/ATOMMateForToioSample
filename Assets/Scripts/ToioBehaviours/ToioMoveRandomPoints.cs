@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using toio;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ public class ToioMoveRandomPoints : ToioBehaviour
     Vector2 targetPos;
     public float MaxSpeed = 60f;
     public int Tolerance = 30; // 許容範囲　default 8。大きめにすることで目標地点近辺で止まらないようにする
+    Queue<int> distanceQueue = new Queue<int>(); // 誤作動があるため直近3回分の距離を記録しておく
+    int _latestDistanceFrame = 0;
 
     public override void OnEnter()
     {
@@ -19,7 +22,14 @@ public class ToioMoveRandomPoints : ToioBehaviour
     {
         base.OnUpdate();
 
-        // TODO: 距離センサの値が近かったらAwayに遷移する
+        if (face.Connected)
+        {
+            if (UpdateDistanceIfNeeded() && IsObstacleFront())
+            {
+                controller.ChangeBehaviour<ToioMoveAway>();
+                return;
+            }
+        }
 
         if (!cube.isGrounded)
         {
@@ -36,6 +46,28 @@ public class ToioMoveRandomPoints : ToioBehaviour
                 SetTargetPos();
             }
         }
+    }
+
+    bool UpdateDistanceIfNeeded()
+    {
+        if (_latestDistanceFrame == face.LatestDistanceUpdateFrame)
+        {
+            return false;
+        }
+
+        distanceQueue.Enqueue(face.Distance);
+        if (distanceQueue.Count > 3)
+        {
+            distanceQueue.Dequeue();
+        }
+        _latestDistanceFrame = face.LatestDistanceUpdateFrame;
+        return true;
+    }
+
+    bool IsObstacleFront()
+    {
+        var average = distanceQueue.Average();
+        return 1 < average && average < 150;
     }
 
     void SetTargetPos()

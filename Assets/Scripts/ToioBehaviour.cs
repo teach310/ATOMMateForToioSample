@@ -12,6 +12,7 @@ public class ToioBehaviour
     protected CubeManager cubeManager => controller.CubeManager;
     protected CubeHandle cubeHandle => controller.CubeHandle;
     protected Cube cube => controller.Cube;
+    protected ToioFace face => controller.Face;
 
     public virtual void OnEnter()
     {

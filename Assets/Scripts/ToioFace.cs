@@ -25,8 +25,13 @@ public class ToioFace : MonoBehaviour, ICBCentralManagerDelegate, ICBPeripheralD
 
     bool _connectedToPeripheral = false;
 
-    public bool Connected {
-        get {
+    public int Distance { get; set; } = 0; // [mm]
+    public int LatestDistanceUpdateFrame { get; set; } = 0;
+
+    public bool Connected
+    {
+        get
+        {
             if (!_connectedToPeripheral) return false;
             return _expressionCharacteristic != null;
         }
@@ -116,7 +121,9 @@ public class ToioFace : MonoBehaviour, ICBCentralManagerDelegate, ICBPeripheralD
         {
             var data = characteristic.Value;
             int distance = BitConverter.ToInt16(data, 0);
-            Debug.Log($"Distance: {distance}");
+            // Debug.Log($"Distance: {distance}");
+            Distance = distance;
+            LatestDistanceUpdateFrame = Time.frameCount;
         }
     }
 
