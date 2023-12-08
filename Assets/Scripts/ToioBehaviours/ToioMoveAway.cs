@@ -29,6 +29,7 @@ public class ToioMoveAway : ToioBehaviour
 
         if (!cube.isGrounded)
         {
+            cube.PlayPresetSound(5, order: Cube.ORDER_TYPE.Strong); // Mat out
             controller.ChangeBehaviour<ToioStay>();
             return;
         }
@@ -39,12 +40,14 @@ public class ToioMoveAway : ToioBehaviour
             Movement mv = cubeHandle.Move2Target(targetPos, maxSpd: MaxSpeed, rotateTime: RotateTime, tolerance: Tolerance).Exec();
             if (mv.reached)
             {
+                face.SetExpression(ToioFace.Expression.Happy);
                 controller.ChangeBehaviour<ToioMoveRandomPoints>();
                 return;
             }
 
             if (Time.time - _enterTime > _maxTime)
             {
+                face.SetExpression(ToioFace.Expression.Neutral);
                 controller.ChangeBehaviour<ToioMoveRandomPoints>();
                 return;
             }

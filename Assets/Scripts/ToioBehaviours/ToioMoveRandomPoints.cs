@@ -33,7 +33,7 @@ public class ToioMoveRandomPoints : ToioBehaviour
 
         if (!cube.isGrounded)
         {
-            // TODO: SE
+            cube.PlayPresetSound(5, order: Cube.ORDER_TYPE.Strong); // Mat out
             controller.ChangeBehaviour<ToioStay>();
             return;
         }
@@ -43,6 +43,7 @@ public class ToioMoveRandomPoints : ToioBehaviour
             Movement mv = cubeHandle.Move2Target(targetPos, maxSpd: MaxSpeed, tolerance: Tolerance).Exec();
             if (mv.reached)
             {
+                face.SetExpression(ToioFace.Expression.Neutral);
                 SetTargetPos();
             }
         }
